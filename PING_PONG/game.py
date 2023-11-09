@@ -28,12 +28,13 @@ class GameWindow(arcade.Window):
         
     def on_update(self,delta_time):
         self.ball.update()
+        self.pad.update()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
             self.pad.change_x = -SPEED_PAD
         if key == arcade.key.RIGHT:
-            self.pad.change_y = SPEED_PAD
+            self.pad.change_x = SPEED_PAD
 
 class Ball(arcade.Sprite):
     def update(self):
@@ -45,7 +46,8 @@ class Ball(arcade.Sprite):
             self.change_y*=-1
 
 class Pad(arcade.Sprite):
-    pass
+    def update(self):
+        self.center_x += self.change_x
     
 window = GameWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_NAME)
 arcade.run()
