@@ -42,6 +42,7 @@ class GameWindow(arcade.Window):
         if self.ball.bottom < 0:
             self.attempts-=1
             self.setup()
+        
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
