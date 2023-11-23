@@ -16,6 +16,7 @@ class GameWindow(arcade.Window):
         self.score = 0
         self.attempts = 3
         self.lose = False
+        self.muzik = arcade.load_sound('7ИТ/PING_PONG/tihaya-peredacha.mp3')
 
     def setup(self):    
         self.ball.center_x = SCREEN_WIDTH/2
@@ -32,17 +33,23 @@ class GameWindow(arcade.Window):
         self.pad.draw()
         arcade.draw_text(f'SCORE: {self.score}', 20, SCREEN_HEIGHT - 40, (0,0,0), 20)
         arcade.draw_text(f'ATTEMPTS: {self.attempts}', SCREEN_WIDTH - 200, SCREEN_HEIGHT - 40, (0,0,0), 20)
+        if self.lose:
+            arcade.draw_text('GAME OVER', SCREEN_WIDTH - 420, SCREEN_HEIGHT - 250, (255,0,0), 30)
         
     def on_update(self,delta_time):
-        self.ball.update()
-        self.pad.update()
-        if arcade.check_for_collision(self.ball, self.pad):
-            self.ball.change_y = - self.ball.change_y
-            self.score+=1
-        if self.ball.bottom < 0:
-            self.attempts-=1
-            self.setup()
-        
+        if not self.lose:
+            self.ball.update()
+            self.pad.update()
+            if arcade.check_for_collision(self.ball, self.pad):
+                arcade.play_sound(self.muzik)
+                self.ball.bottom = self.pad.top
+                self.ball.change_y = - self.ball.change_y
+                self.score+=1
+            if self.ball.bottom < 0:
+                self.attempts-=1
+                self.setup()
+            if self.attempts == 0:
+                self.lose = True
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
