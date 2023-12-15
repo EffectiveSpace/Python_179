@@ -11,6 +11,8 @@ CAR_SPEED = 5
 DELTA_ANGLE = 15
 BREAK = '7ИТ/RACE/road_break.png'
 SCALE_BREAK = 0.1
+SOUND_MOTOR = '7ИТ/RACE/sound_motor.mp3'
+SOUND_CRASH = ''
 #######################
 
 class GameWindow(arcade.Window):
@@ -19,6 +21,8 @@ class GameWindow(arcade.Window):
         self.bg = arcade.load_texture(FONT)
         self.car = Car(CAR, CAR_SCALE)
         self.break_road = Break(BREAK, SCALE_BREAK)
+        self.sound = arcade.load_sound(SOUND_MOTOR)
+        self.crash = arcade.load_sound(SOUND_CRASH)
 
     def setup(self):
         self.car.center_x = WIDTH - WIDTH/3
@@ -26,6 +30,7 @@ class GameWindow(arcade.Window):
         self.car.angle = -90
         self.break_road.center_x = random.randint(WIDTH/6, WIDTH)
         self.break_road.change_y = random.randint(3,10)
+        arcade.play_sound(self.sound)
     
     def on_draw(self):
         arcade.start_render()
@@ -36,6 +41,9 @@ class GameWindow(arcade.Window):
     def on_update(self, delta_time):
         self.car.update()
         self.break_road.update()
+        if arcade.check_for_collision(self.car, self.break_road):
+            arcade.stop_sound(self.sound)
+            arcade.play_sound(self.crash)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
@@ -53,12 +61,17 @@ class GameWindow(arcade.Window):
 class Car(arcade.Sprite):
     def update(self):
         self.center_x+=self.change_x
+        if self.right > WIDTH:
+            self.right = WIDTH
+        if self.left < 0:
+            self.left = 0
 
 class Break(arcade.Sprite):
     def update(self):
         self.center_y-=self.change_y
         if self.top < 0:
-            self.bottom = HEIGHT
+            self.bottom = random.randint(HEIGHT, HEIGHT*3)
+            self.center_x = random.randint(0, WIDTH)
 
 window = GameWindow(WIDTH, HEIGHT, TITLE)
 window.setup()
